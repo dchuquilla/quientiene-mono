@@ -11,8 +11,7 @@ import type { LinksFunction } from "@remix-run/node";
 
 import stylesheet from "~/tailwind.css?url";
 
-import { Navbar, Sidebar } from "flowbite-react";
-import { HiArrowSmRight, HiChartPie, HiInbox, HiShoppingBag, HiTable, HiUser, HiViewBoards } from "react-icons/hi";
+import { Navbar } from "flowbite-react";
 
 
 export const links: LinksFunction = () => [
