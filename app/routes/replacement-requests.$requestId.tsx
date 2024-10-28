@@ -1,76 +1,91 @@
-"use client";
-
-import { json, replace, type LoaderFunctionArgs, type MetaFunction } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
-import { Table } from "flowbite-react";
+import { type LoaderFunctionArgs, type MetaFunction } from "@remix-run/node";
+import { Link, useLoaderData } from "@remix-run/react";
+import { Button, Card, List, Timeline } from "flowbite-react";
+import { HiCheckCircle, HiCalendar } from "react-icons/hi";
+import { GetReplacementRequestById } from "../model/replacement-request";
 import invariant from "tiny-invariant";
+
 
 export const loader = async ({
   params }: LoaderFunctionArgs) => {
   invariant(params.requestId, "Missing requestId param");
-  const replacementRequests = [{"id": 1}, {"id": 2}, {"id": 3}];
 
-  if (!replacementRequests) {
+  const replacementRequest = await GetReplacementRequestById(params.requestId);
+
+  if (!replacementRequest) {
     throw new Response("Not found", { status: 404 });
   }
 
-  return { replacementRequests };
+  return { replacementRequest };
 };
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "New Remix App" },
-    { name: "description", content: "Welcome to Remix!" },
+    { title: "Solicitud de repuesto" },
+    { name: "description", content: "Detalles de solicitud de repuesto!" },
   ];
 };
 
-export default function Index() {
-  const { replacementRequests } = useLoaderData<typeof loader>();
+export default function ReplacementRequest() {
+  const { replacementRequest } = useLoaderData<typeof loader>();
+
   return (
     <div>
       <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl
       dark:text-white">
-        Mis solicitudes
+        Solicitud de repuesto
       </h1>
 
       <div className="overflow-x-auto">
-        <Table hoverable>
-          <Table.Head>
-            <Table.HeadCell>Product name</Table.HeadCell>
-            <Table.HeadCell>Color</Table.HeadCell>
-            <Table.HeadCell>Category</Table.HeadCell>
-            <Table.HeadCell>Price</Table.HeadCell>
-            <Table.HeadCell>
-              <span className="sr-only">Edit</span>
-            </Table.HeadCell>
-          </Table.Head>
-          <Table.Body className="divide-y">
-            {
-            replacementRequests.length ? (
-              replacementRequests.map((replacementRequest) => (
-                <Table.Row key={replacementRequest.id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                  <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                    {'Apple MacBook Pro 17"'}
-                  </Table.Cell>
-                  <Table.Cell>Sliver</Table.Cell>
-                  <Table.Cell>Laptop</Table.Cell>
-                  <Table.Cell>$2999</Table.Cell>
-                  <Table.Cell>
-                    <a href={`/${replacementRequest.id}/edit`} className="font-medium text-cyan-600 hover:underline dark:text-cyan-500">
-                      Edit
-                    </a>
-                  </Table.Cell>
-                </Table.Row>
-              ))
-            ) : (
-              <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white" colSpan={5}>
-                  Noting found
-                </Table.Cell>
-              </Table.Row>
-            )}
-          </Table.Body>
-        </Table>
+        <div className="flex">
+          <div className="flex-1 w-64">
+            <Card href="#" className="max-w-sm">
+              <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                {replacementRequest.data?.replacement.toUpperCase()}
+              </h5>
+              <p className="font-normal text-gray-700 dark:text-gray-400">
+                {replacementRequest.data?.transcription} <br /><br />
+                <List>
+                  <List.Item icon={HiCheckCircle}><b>Marca:</b>&nbsp; {replacementRequest.data?.brand}</List.Item>
+                  <List.Item icon={HiCheckCircle}><b>Modelo:</b>&nbsp; {replacementRequest.data?.model}</List.Item>
+                  <List.Item icon={HiCheckCircle}><b>Año:</b>&nbsp; { replacementRequest.data?.year }</List.Item>
+                  {replacementRequest.data?.audio ? (
+                    <List.Item icon={HiCheckCircle}>
+                      <a href={replacementRequest.data?.audio} target="_blank" rel="noreferrer noopener">Audio</a>
+                    </List.Item>
+                  ): ("")}
+                </List>
+              </p>
+              <Button as={Link} href={`/replacement-requests/${replacementRequest.id}/quote`} to={""}>
+                Cotizar
+                <svg className="-mr-1 ml-2 h-4 w-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    fillRule="evenodd"
+                    d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </Button>
+            </Card>
+          </div>
+          <div className="flex-1 w-32">
+            <h2 className="mb-1 text-base font-semibold text-gray-900 dark:text-white">Historial</h2>
+            <p className="flex items-center text-sm font-normal text-gray-500 dark:text-gray-400">
+              <Timeline>
+                <Timeline.Item>
+                  <Timeline.Point icon={HiCalendar} />
+                  <Timeline.Content>
+                    <Timeline.Time>{new Date(replacementRequest.data?.created_at.seconds * 1000).toLocaleDateString("en-GB")}</Timeline.Time>
+                    <Timeline.Title>Solicitud creada</Timeline.Title>
+                  </Timeline.Content>
+                </Timeline.Item>
+              </Timeline>
+            </p>
+          </div>
+          <div className="flex-none w-14">
+            &nbsp;
+          </div>
+        </div>
       </div>
     </div>
   );
