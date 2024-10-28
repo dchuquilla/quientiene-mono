@@ -38,7 +38,7 @@ export default function Index() {
               <Table.Cell>Laptop</Table.Cell>
               <Table.Cell>$2999</Table.Cell>
               <Table.Cell>
-                <a href="#" className="font-medium text-cyan-600 hover:underline dark:text-cyan-500">
+                <a href="/edit" className="font-medium text-cyan-600 hover:underline dark:text-cyan-500">
                   Edit
                 </a>
               </Table.Cell>
@@ -51,7 +51,7 @@ export default function Index() {
               <Table.Cell>Laptop PC</Table.Cell>
               <Table.Cell>$1999</Table.Cell>
               <Table.Cell>
-                <a href="#" className="font-medium text-cyan-600 hover:underline dark:text-cyan-500">
+                <a href="/edit" className="font-medium text-cyan-600 hover:underline dark:text-cyan-500">
                   Edit
                 </a>
               </Table.Cell>
@@ -62,7 +62,7 @@ export default function Index() {
               <Table.Cell>Accessories</Table.Cell>
               <Table.Cell>$99</Table.Cell>
               <Table.Cell>
-                <a href="#" className="font-medium text-cyan-600 hover:underline dark:text-cyan-500">
+                <a href="/edit" className="font-medium text-cyan-600 hover:underline dark:text-cyan-500">
                   Edit
                 </a>
               </Table.Cell>
