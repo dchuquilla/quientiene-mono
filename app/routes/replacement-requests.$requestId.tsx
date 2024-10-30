@@ -38,7 +38,7 @@ export default function ReplacementRequest() {
 
       <div className="overflow-x-auto">
         <div className="flex">
-          <div className="flex-1 w-64">
+          <div className="w-full w-1/3">
             <Card href="#" className="max-w-sm">
               <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                 {replacementRequest.data?.replacement.toUpperCase()}
@@ -56,7 +56,7 @@ export default function ReplacementRequest() {
                   ): ("")}
                 </List>
               </p>
-              <Button as={Link} href={`/replacement-requests/${replacementRequest.id}/quote`} to={""}>
+              <Button as={Link} href={`/quotes/${replacementRequest.id}/new`} to={`/quotes/${replacementRequest.id}/new`}>
                 Cotizar
                 <svg className="-mr-1 ml-2 h-4 w-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -68,7 +68,7 @@ export default function ReplacementRequest() {
               </Button>
             </Card>
           </div>
-          <div className="flex-1 w-32">
+          <div className="w-full w-2/3">
             <h2 className="mb-1 text-base font-semibold text-gray-900 dark:text-white">Historial</h2>
             <p className="flex items-center text-sm font-normal text-gray-500 dark:text-gray-400">
               <Timeline>
@@ -81,9 +81,6 @@ export default function ReplacementRequest() {
                 </Timeline.Item>
               </Timeline>
             </p>
-          </div>
-          <div className="flex-none w-14">
-            &nbsp;
           </div>
         </div>
       </div>
