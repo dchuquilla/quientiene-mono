@@ -30,7 +30,7 @@ export const GetDocumentById = async (collectionName: string, id: string) => {
   }
 };
 
-export const SaveDocument = async (collectionName: string, data: any) => {
+export const SaveDocument = async (collectionName: string, data: object) => {
   try {
     const collectionRef = collection(fb_db, collectionName);
     const docRef = await addDoc(collectionRef, data);
