@@ -1,10 +1,9 @@
 import { type LoaderFunctionArgs, type MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { Card, List } from "flowbite-react";
+import { Card, List, Button, FileInput, Label, Textarea, TextInput  } from "flowbite-react";
 import { HiCheckCircle } from "react-icons/hi";
 import { GetReplacementRequestById } from "../model/replacement-request";
 import invariant from "tiny-invariant";
-
 
 export const loader = async ({
   params }: LoaderFunctionArgs) => {
@@ -39,7 +38,7 @@ export default function CreateQuote() {
 
       <div className="overflow-x-auto">
         <div className="flex">
-          <div className="w-full w-1/3">
+          <div className="w-1/3">
             <Card href="#" className="max-w-sm">
               <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
           {replacementRequest.data?.replacement.toUpperCase()}
@@ -59,11 +58,23 @@ export default function CreateQuote() {
               </p>
             </Card>
           </div>
-          <div className="w-full w-2/3">
-            <h2 className="mb-1 text-base font-semibold text-gray-900 dark:text-white">Crear cotizacion</h2>
-            <p className="flex items-center text-sm font-normal text-gray-500 dark:text-gray-400">
-
-            </p>
+          <div className="w-2/3">
+            <h2 className="mb-1 text-base font-semibold text-gray-900 dark:text-white">Crear cotización</h2>
+            <form className="flex flex-col">
+              <div className="mb-5">
+                <Label htmlFor="description" value="Descripción del repuesto" />
+                <Textarea id="description" name="description" required />
+              </div>
+              <div className="mb-5">
+                <Label htmlFor="price" value="Precio" />
+                <TextInput id="price" name="price" type="number" required />
+              </div>
+              <div className="mb-10">
+                <Label htmlFor="photo" value="Fotografía" />
+                <FileInput id="photo" name="photo" accept="image/*" required />
+              </div>
+              <Button type="submit">Enviar</Button>
+            </form>
           </div>
         </div>
       </div>
