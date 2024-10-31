@@ -38,7 +38,7 @@ export default function ReplacementRequest() {
 
       <div className="overflow-x-auto">
         <div className="flex">
-          <div className="w-full w-1/3">
+          <div className="w-1/3">
             <Card href="#" className="max-w-sm">
               <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                 {replacementRequest.data?.replacement.toUpperCase()}
@@ -68,7 +68,7 @@ export default function ReplacementRequest() {
               </Button>
             </Card>
           </div>
-          <div className="w-full w-2/3">
+          <div className="w-2/3">
             <h2 className="mb-1 text-base font-semibold text-gray-900 dark:text-white">Historial</h2>
             <p className="flex items-center text-sm font-normal text-gray-500 dark:text-gray-400">
               <Timeline>
