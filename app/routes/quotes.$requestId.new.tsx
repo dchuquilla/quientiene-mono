@@ -1,9 +1,12 @@
-import { type LoaderFunctionArgs, type MetaFunction } from "@remix-run/node";
+import { type LoaderFunctionArgs, type MetaFunction, type ActionFunction, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { Card, List, Button, FileInput, Label, Textarea, TextInput  } from "flowbite-react";
+import { Card, List, Button, FileInput, Label, Textarea, TextInput } from "flowbite-react";
 import { HiCheckCircle } from "react-icons/hi";
 import { GetReplacementRequestById } from "../model/replacement-request";
+import { SaveReplacementProposal } from "../model/replacement-proposal";
 import invariant from "tiny-invariant";
+import fs from "fs/promises";
+import path from "path";
 
 export const loader = async ({
   params }: LoaderFunctionArgs) => {
@@ -25,6 +28,51 @@ export const meta: MetaFunction = () => {
   ];
 };
 
+export const action: ActionFunction = async ({ request, params }) => {
+  invariant(params.requestId, "Missing requestId param");
+
+  const formData = await request.formData();
+  const description = formData.get("description");
+  const price = formData.get("price");
+  const photo = formData.get("photo");
+
+  if (
+    typeof description !== "string" ||
+    typeof price !== "string"
+  ) {
+    return new Response("Invalid form data", { status: 400 });
+  }
+
+  // Save photo to public/images folder
+  const photoBuffer = Buffer.from(await photo.arrayBuffer());
+
+  // Generate a random 10-character string for photoName
+  const generateRandomString = (length: number) => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    return Array.from({ length }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join('');
+  };
+
+  const extension = path.extname(photo.name);
+  const photoName = `${generateRandomString(10)}${extension}`;
+
+  const photoPath = path.join(process.cwd(), "public", "images", photoName);
+
+  await fs.writeFile(photoPath, photoBuffer);
+
+  const photoUri = `/images/${photoName}`;
+
+  const data = {
+    request_id: params.requestId,
+    description,
+    price,
+    photo: photoUri,
+  };
+
+  await SaveReplacementProposal(data);
+
+  return redirect(`/replacement-requests/${params.requestId}`);
+};
+
 export default function CreateQuote() {
   const { replacementRequest } = useLoaderData<typeof loader>();
 
@@ -34,7 +82,6 @@ export default function CreateQuote() {
       dark:text-white">
         Cotizar repuesto
       </h1>
-
 
       <div className="overflow-x-auto">
         <div className="flex">
@@ -60,7 +107,7 @@ export default function CreateQuote() {
           </div>
           <div className="w-2/3">
             <h2 className="mb-1 text-base font-semibold text-gray-900 dark:text-white">Crear cotización</h2>
-            <form className="flex flex-col">
+            <form method="post" encType="multipart/form-data" className="flex flex-col">
               <div className="mb-5">
                 <Label htmlFor="description" value="Descripción del repuesto" />
                 <Textarea id="description" name="description" required />
