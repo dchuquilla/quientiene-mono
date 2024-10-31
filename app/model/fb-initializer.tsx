@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, doc, getDoc } from 'firebase/firestore/lite';
+import { getFirestore, collection, doc, getDoc, addDoc } from 'firebase/firestore/lite';
 import fbConfig from "../../fb-config";
 
 const firebaseConfig = {
@@ -26,6 +26,18 @@ export const GetDocumentById = async (collectionName: string, id: string) => {
     return { data, id };
   } catch (error) {
     console.log(`Error in GetDocumentById: ${error}`);
+    return null;
+  }
+};
+
+export const SaveDocument = async (collectionName: string, data: any) => {
+  try {
+    const collectionRef = collection(fb_db, collectionName);
+    const docRef = await addDoc(collectionRef, data);
+    console.log(`Document written with ID: ${docRef.id}`);
+    return docRef.id;
+  } catch (error) {
+    console.error(`Error saving document: ${error}`);
     return null;
   }
 };
