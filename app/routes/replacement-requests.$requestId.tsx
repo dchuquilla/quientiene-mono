@@ -85,7 +85,7 @@ export default function ReplacementRequest() {
                   <Timeline.Item key={index}>
                     <Timeline.Point icon={HiCalendar} />
                     <Timeline.Content>
-                      <Timeline.Time>{new Date(history.data?.created_at.seconds * 1000).toLocaleDateString("en-GB")}</Timeline.Time>
+                      <Timeline.Time>{ new Date(history.data?.created_at.seconds * 1000).toLocaleDateString("en-GB") }</Timeline.Time>
                       <Timeline.Title>{ replacementStatusOptions[history.data?.type] }</Timeline.Title>
                     </Timeline.Content>
                   </Timeline.Item>
