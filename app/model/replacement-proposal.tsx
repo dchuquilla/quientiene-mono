@@ -1,6 +1,6 @@
 import { GetDocumentById, SaveDocument, SaveRequestHistory } from "./fb-initializer";
 
-interface ReplacementProposal {
+export interface ReplacementProposalType {
     description: string;
     price: number;
     photo: string;
@@ -11,7 +11,7 @@ export const GetReplacementProposalById = async (id: string) => {
   return await GetDocumentById("replacement-proposals", id);
 };
 
-export const SaveReplacementProposal = async (data: ReplacementProposal) => {
+export const SaveReplacementProposal = async (data: ReplacementProposalType) => {
   const proposal_id = await SaveDocument("replacement-proposals", data);
   const historyData = {
     "type": "new-proposal",

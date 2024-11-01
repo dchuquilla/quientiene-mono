@@ -3,7 +3,7 @@ import { useLoaderData } from "@remix-run/react";
 import { Card, List, Button, FileInput, Label, Textarea, TextInput } from "flowbite-react";
 import { HiCheckCircle } from "react-icons/hi";
 import { GetReplacementRequestById } from "../model/replacement-request";
-import { SaveReplacementProposal } from "../model/replacement-proposal";
+import { type ReplacementProposalType, SaveReplacementProposal } from "../model/replacement-proposal";
 import invariant from "tiny-invariant";
 import fs from "fs/promises";
 import path from "path";
@@ -61,10 +61,10 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   const photoUri = `/images/${photoName}`;
 
-  const data = {
+  const data: ReplacementProposalType = {
     request_id: params.requestId,
     description,
-    price,
+    price: parseFloat(price),
     photo: photoUri,
   };
 
