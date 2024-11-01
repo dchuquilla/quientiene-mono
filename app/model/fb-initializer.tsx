@@ -53,6 +53,7 @@ export const GetDocumentsByField = async (collectionName: string, fieldName: str
     const q = query(collectionRef, where(fieldName, "==", value));
     const querySnapshot = await getDocs(q);
     const documents = querySnapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }));
+    console.log(`documents from ${collectionName}: ${JSON.stringify(documents)}`);
     return documents;
   } catch (error) {
     console.error(`Error in GetDocumentsByField: ${error}`);
