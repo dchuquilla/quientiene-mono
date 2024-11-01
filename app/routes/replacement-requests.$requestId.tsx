@@ -2,7 +2,8 @@ import { type LoaderFunctionArgs, type MetaFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { Button, Card, List, Timeline } from "flowbite-react";
 import { HiCheckCircle, HiCalendar } from "react-icons/hi";
-import { GetReplacementRequestById } from "../model/replacement-request";
+import { GetReplacementRequestById, replacementStatusOptions } from "../model/replacement-request";
+import { GetReplacementRequestHistoryByRequestId } from "../model/replacement-request-history";
 import invariant from "tiny-invariant";
 
 
@@ -11,12 +12,13 @@ export const loader = async ({
   invariant(params.requestId, "Missing requestId param");
 
   const replacementRequest = await GetReplacementRequestById(params.requestId);
+  const replacementRequestHistory = await GetReplacementRequestHistoryByRequestId(params.requestId)
 
   if (!replacementRequest) {
     throw new Response("Not found", { status: 404 });
   }
 
-  return { replacementRequest };
+  return { replacementRequest, replacementRequestHistory };
 };
 
 export const meta: MetaFunction = () => {
@@ -27,7 +29,7 @@ export const meta: MetaFunction = () => {
 };
 
 export default function ReplacementRequest() {
-  const { replacementRequest } = useLoaderData<typeof loader>();
+  const { replacementRequest, replacementRequestHistory } = useLoaderData<typeof loader>();
 
   return (
     <div>
@@ -79,6 +81,15 @@ export default function ReplacementRequest() {
                     <Timeline.Title>Solicitud creada</Timeline.Title>
                   </Timeline.Content>
                 </Timeline.Item>
+                {replacementRequestHistory.map((history, index) => (
+                  <Timeline.Item key={index}>
+                    <Timeline.Point icon={HiCalendar} />
+                    <Timeline.Content>
+                      <Timeline.Time>{new Date(history.data?.created_at.seconds * 1000).toLocaleDateString("en-GB")}</Timeline.Time>
+                      <Timeline.Title>{ replacementStatusOptions[history.data?.type] }</Timeline.Title>
+                    </Timeline.Content>
+                  </Timeline.Item>
+                ))}
               </Timeline>
             </p>
           </div>
