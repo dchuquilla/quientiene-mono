@@ -66,6 +66,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     description,
     price: parseFloat(price),
     photo: photoUri,
+    status: "pending",
   };
 
   await SaveReplacementProposal(data);
@@ -112,10 +113,17 @@ export default function CreateQuote() {
                 <Label htmlFor="description" value="Descripción del repuesto" />
                 <Textarea id="description" name="description" required />
               </div>
-              <div className="mb-5">
+                <div className="mb-5">
                 <Label htmlFor="price" value="Precio" />
-                <TextInput id="price" name="price" type="number" required />
-              </div>
+                <TextInput
+                  id="price"
+                  name="price"
+                  type="text"
+                  pattern="^\d+(\,\d{1,2})?$"
+                  title="Please enter a valid price (e.g., 1234,56)"
+                  required
+                />
+                </div>
               <div className="mb-10">
                 <Label htmlFor="photo" value="Fotografía" />
                 <FileInput id="photo" name="photo" accept="image/*" required />
