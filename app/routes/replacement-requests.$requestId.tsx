@@ -1,6 +1,6 @@
 import { type LoaderFunctionArgs, type MetaFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
-import { Button, Card, List, Timeline } from "flowbite-react";
+import { Badge, Button, Card, List, Timeline } from "flowbite-react";
 import { HiCheckCircle, HiCalendar } from "react-icons/hi";
 import { GetReplacementRequestById, replacementStatusOptions } from "../model/replacement-request";
 import { GetReplacementRequestHistoryByRequestId } from "../model/replacement-request-history";
@@ -45,6 +45,8 @@ export default function ReplacementRequest() {
               <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                 {replacementRequest.data?.replacement.toUpperCase()}
               </h5>
+
+                <Badge color={replacementStatusOptions[replacementRequest.data?.status]?.badge}>{ replacementStatusOptions[replacementRequest.data?.status]?.label }</Badge>
               <p className="font-normal text-gray-700 dark:text-gray-400">
                 {replacementRequest.data?.transcription} <br /><br />
                 <List>
@@ -78,7 +80,7 @@ export default function ReplacementRequest() {
                   <Timeline.Point icon={HiCalendar} />
                   <Timeline.Content>
                     <Timeline.Time>{new Date(replacementRequest.data?.created_at.seconds * 1000).toLocaleDateString("en-GB")}</Timeline.Time>
-                    <Timeline.Title>Solicitud creada</Timeline.Title>
+                    <Timeline.Title>{ replacementStatusOptions["new"]?.label }</Timeline.Title>
                   </Timeline.Content>
                 </Timeline.Item>
                 {replacementRequestHistory.map((history, index) => (
@@ -86,7 +88,7 @@ export default function ReplacementRequest() {
                     <Timeline.Point icon={HiCalendar} />
                     <Timeline.Content>
                       <Timeline.Time>{ new Date(history.data?.created_at.seconds * 1000).toLocaleDateString("en-GB") }</Timeline.Time>
-                      <Timeline.Title>{ replacementStatusOptions[history.data?.type] }</Timeline.Title>
+                      <Timeline.Title>{ replacementStatusOptions[history.data?.type]?.label }</Timeline.Title>
                     </Timeline.Content>
                   </Timeline.Item>
                 ))}
