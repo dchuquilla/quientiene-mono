@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, doc, getDoc, addDoc, getDocs, query, where } from 'firebase/firestore/lite';
+import { getFirestore, collection, doc, getDoc, addDoc, getDocs, query, where, setDoc } from 'firebase/firestore/lite';
 import fbConfig from "../../fb-config";
 
 const firebaseConfig = {
@@ -41,6 +41,19 @@ export const SaveDocument = async (collectionName: string, data: object) => {
     return null;
   }
 };
+
+export const UpdateDocument = async (collectionName: string, id: string, data: object) => {
+  try {
+    const collectionRef = collection(fb_db, collectionName);
+    const docRef = doc(collectionRef, id);
+    await setDoc(docRef, data, { merge: true });
+    console.log(`Document updated with ID: ${docRef.id}`);
+    return docRef.id;
+  } catch (error) {
+    console.error(`Error updating document: ${error}`);
+    return null;
+  }
+}
 
 export const SaveRequestHistory = async (data: object) => {
   data = { ...data, "created_at": new Date(), "updated_at": new Date() };
