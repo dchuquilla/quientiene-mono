@@ -46,7 +46,7 @@ export default function ReplacementRequest() {
                 {replacementRequest.data?.replacement.toUpperCase()}
               </h5>
 
-                <Badge color={replacementStatusOptions[replacementRequest.data?.status]?.badge}>{ replacementStatusOptions[replacementRequest.data?.status]?.label }</Badge>
+              <Badge color={replacementStatusOptions[replacementRequest.data?.status]?.badge}>{ replacementStatusOptions[replacementRequest.data?.status]?.label }</Badge>
               <p className="font-normal text-gray-700 dark:text-gray-400">
                 {replacementRequest.data?.transcription} <br /><br />
                 <List>
@@ -88,7 +88,10 @@ export default function ReplacementRequest() {
                     <Timeline.Point icon={HiCalendar} />
                     <Timeline.Content>
                       <Timeline.Time>{ new Date(history.data?.created_at.seconds * 1000).toLocaleDateString("en-GB") }</Timeline.Time>
-                      <Timeline.Title>{ replacementStatusOptions[history.data?.type]?.label }</Timeline.Title>
+                      <Timeline.Title>{replacementStatusOptions[history.data?.type]?.label}</Timeline.Title>
+                      <Button color="success" as={Link} href={`/replacement-proposals/${history.data?.proposal_id}`} to={`/replacement-proposals/${history.data?.proposal_id}`}>
+                        Ver detalles
+                      </Button>
                     </Timeline.Content>
                   </Timeline.Item>
                 ))}
