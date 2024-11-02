@@ -42,24 +42,27 @@ export const action: ActionFunction = async ({ request, params }) => {
   ) {
     return new Response("Invalid form data", { status: 400 });
   }
+  let photoUri = "";
 
-  // Save photo to public/images folder
-  const photoBuffer = Buffer.from(await photo.arrayBuffer());
+  if (photo) {
+    // Save photo to public/images folder
+    const photoBuffer = Buffer.from(await photo.arrayBuffer());
 
-  // Generate a random 10-character string for photoName
-  const generateRandomString = (length: number) => {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    return Array.from({ length }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join('');
-  };
+    // Generate a random 10-character string for photoName
+    const generateRandomString = (length: number) => {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      return Array.from({ length }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join('');
+    };
 
-  const extension = path.extname(photo.name);
-  const photoName = `${generateRandomString(10)}${extension}`;
+    const extension = path.extname(photo.name);
+    const photoName = `${generateRandomString(10)}${extension}`;
 
-  const photoPath = path.join(process.cwd(), "public", "images", photoName);
+    const photoPath = path.join(process.cwd(), "public", "images", photoName);
 
-  await fs.writeFile(photoPath, photoBuffer);
+    await fs.writeFile(photoPath, photoBuffer);
 
-  const photoUri = `/images/${photoName}`;
+    photoUri = `/images/${photoName}`;
+  }
 
   const data: ReplacementProposalType = {
     request_id: params.requestId,
