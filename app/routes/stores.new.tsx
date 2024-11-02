@@ -27,7 +27,7 @@ export const action: ActionFunction = async ({ request }) => {
     updated_at: new Date(),
   });
 
-  return redirect("/stores");
+  return redirect("/");
 };
 
 interface ActionDataType {
