@@ -1,4 +1,5 @@
 import { vitePlugin as remix } from "@remix-run/dev";
+import { installGlobals } from "@remix-run/node";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
@@ -8,7 +9,12 @@ declare module "@remix-run/node" {
   }
 }
 
+installGlobals();
+
 export default defineConfig({
+  server: {
+    port: 3002,
+  },
   plugins: [
     remix({
       future: {
@@ -18,6 +24,7 @@ export default defineConfig({
         v3_singleFetch: true,
         v3_lazyRouteDiscovery: true,
       },
+      ignoredRouteFiles: ["**/*.css"],
     }),
     tsconfigPaths(),
   ],

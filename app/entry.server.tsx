@@ -11,6 +11,37 @@ import { createReadableStreamFromReadable } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
 import { isbot } from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
+import { authenticator } from "~/services/auth.server";
+import { FormStrategy } from "remix-auth-form";
+import { StoreType } from "~/model/stores";
+import { login } from "~/model/users";
+
+
+// Tell the Authenticator to use the form strategy
+authenticator.use(
+  new FormStrategy(async ({ form }) => {
+    const email = form.get("email") as string | null;
+    const password = form.get("password") as string | null;
+
+    if (!email || !password) {
+      throw new Error("Email and password are required");
+    }
+    try {
+    // the type of this user must match the type you pass to the Authenticator
+    // the strategy will automatically inherit the type if you instantiate
+    // directly inside the `use` method
+    const user: StoreType = await login(email, password);
+    console.log("User logged in", user);
+    return user;
+    } catch (error) {
+      throw new Error("Login failed");
+    }
+  }),
+  // each strategy has a name and can be changed to use another one
+  // same strategy multiple times, especially useful for the OAuth2 strategy.
+  "user-pass"
+);
+
 
 const ABORT_DELAY = 5_000;
 
