@@ -46,7 +46,7 @@ export default function Index() {
                 <Table.Cell>{request.data?.model}</Table.Cell>
                 <Table.Cell>{request.data?.year}</Table.Cell>
                 <Table.Cell>
-                  <a href={`/request/${request.id}`} className="font-medium text-cyan-600 hover:underline dark:text-cyan-500">
+                  <a href={`/replacement-requests/${request.id}`} className="font-medium text-cyan-600 hover:underline dark:text-cyan-500">
                     Ver
                   </a>
                 </Table.Cell>
