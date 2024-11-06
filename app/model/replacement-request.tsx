@@ -1,6 +1,7 @@
-import { GetDocumentById, UpdateDocument } from "./fb-initializer";
+import { GetDocumentById, GetDocumentsByField, UpdateDocument } from "./fb-initializer";
 
 export interface ReplacementRequestType {
+  id?: string;
   audio?: string;
   replacement?: string;
   brand?: string;
@@ -15,6 +16,11 @@ export interface ReplacementRequestType {
   updated_at?: Date;
 }
 
+export interface ReplacementRequestListType {
+  id: string;
+  data?: ReplacementRequestType;
+}
+
 export const replacementStatusOptions: { [key: string]: { badge: string, label: string } } = {
   "new": {"badge": "info", "label": "Solicitud creada"},
   "in-progress": {"badge": "warning", "label": "Solicitud en proceso"},
@@ -24,6 +30,10 @@ export const replacementStatusOptions: { [key: string]: { badge: string, label: 
   "rejected-proposal": {"badge": "failure", "label": "Propuesta rechazada"},
   "completed-proposal": {"badge": "success", "label": "Completado"},
 };
+
+export const GetAllPendingRequests = async () => {
+  return await GetDocumentsByField("replacement-requests", "status", "new");
+}
 
 export const GetReplacementRequestById = async (id: string) => {
   return await GetDocumentById("replacement-requests", id);
