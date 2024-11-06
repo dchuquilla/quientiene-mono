@@ -5,21 +5,26 @@ import { HiCheckCircle, HiCalendar } from "react-icons/hi";
 import { GetReplacementRequestById, replacementStatusOptions } from "../model/replacement-request";
 import { GetReplacementRequestHistoryByRequestId } from "../model/replacement-request-history";
 import invariant from "tiny-invariant";
+import { authenticator } from "~/services/auth.server";
 
 
 export const loader = async ({
-  params }: LoaderFunctionArgs) => {
+  params, request }: LoaderFunctionArgs) => {
   invariant(params.requestId, "Missing requestId param");
 
+  const user = await authenticator.isAuthenticated(request);
   const replacementRequest = await GetReplacementRequestById(params.requestId);
   const replacementRequestHistory = await GetReplacementRequestHistoryByRequestId(params.requestId)
 
-  if (!replacementRequest) {
+  console.log("replacementRequest 2:", replacementRequest);
+
+  if (!replacementRequest?.data) {
     throw new Response("Not found", { status: 404 });
   }
 
-  return { replacementRequest, replacementRequestHistory };
+  return { replacementRequest, replacementRequestHistory, user };
 };
+
 
 export const meta: MetaFunction = () => {
   return [
@@ -28,8 +33,8 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export default function ReplacementRequest() {
-  const { replacementRequest, replacementRequestHistory } = useLoaderData<typeof loader>();
+export default function ReplacementRequests() {
+  const { replacementRequest, replacementRequestHistory, user } = useLoaderData<typeof loader>();
 
   return (
     <div>
@@ -60,16 +65,18 @@ export default function ReplacementRequest() {
                   ): ("")}
                 </List>
               </p>
-              <Button as={Link} href={`/quotes/${replacementRequest.id}/new`} to={`/quotes/${replacementRequest.id}/new`}>
-                Cotizar
-                <svg className="-mr-1 ml-2 h-4 w-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    fillRule="evenodd"
-                    d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </Button>
+              {user ? (
+                <Button as={Link} href={`/quotes/${replacementRequest.id}/new`} to={`/quotes/${replacementRequest.id}/new`}>
+                  Cotizar
+                  <svg className="-mr-1 ml-2 h-4 w-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      fillRule="evenodd"
+                      d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </Button>
+              ) : null}
             </Card>
           </div>
           <div className="w-2/3">
@@ -89,9 +96,11 @@ export default function ReplacementRequest() {
                     <Timeline.Content>
                       <Timeline.Time>{ new Date(history.data?.created_at.seconds * 1000).toLocaleDateString("en-GB") }</Timeline.Time>
                       <Timeline.Title>{replacementStatusOptions[history.data?.type]?.label}</Timeline.Title>
-                      <Button color="success" as={Link} href={`/replacement-proposals/${history.data?.proposal_id}`} to={`/replacement-proposals/${history.data?.proposal_id}`}>
-                        Ver detalles
-                      </Button>
+                      {user ? (
+                        <Button color="success" as={Link} href={`/replacement-proposals/${history.data?.proposal_id}`} to={`/replacement-proposals/${history.data?.proposal_id}`}>
+                          Ver detalles
+                        </Button>
+                      ) : null}
                     </Timeline.Content>
                   </Timeline.Item>
                 ))}
