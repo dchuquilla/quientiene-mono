@@ -1,17 +1,16 @@
-"use client";
-
 import {
   Links,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
-import type { LinksFunction } from "@remix-run/node";
-
+import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 import stylesheet from "~/tailwind.css?url";
-
 import { Navbar } from "flowbite-react";
+import { authenticator } from "~/services/auth.server";
+import { UserType } from "~/model/stores"
 
 
 export const links: LinksFunction = () => [
@@ -28,7 +27,15 @@ export const links: LinksFunction = () => [
   },
 ];
 
+export const loader = async ({
+    request
+  }: LoaderFunctionArgs) => {
+  const user = await authenticator.isAuthenticated(request);
+  return user;
+};
+
 export function Layout({ children }: { children: React.ReactNode }) {
+  const user = useLoaderData<UserType>();
   return (
     <html lang="en">
       <head>
@@ -51,12 +58,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 </Navbar.Brand>
                 <Navbar.Toggle />
                 <Navbar.Collapse>
-                  <Navbar.Link href="/navbars" active={true}>
-                    Mis Solicitudes
-                  </Navbar.Link>
                   <Navbar.Link href="/navbars">Nosotros</Navbar.Link>
                   <Navbar.Link href="/about">Precios</Navbar.Link>
-                  <Navbar.Link href="/navbars">Salir</Navbar.Link>
+                  {user ? (
+                    <>
+                      <Navbar.Link href="/navbars" active={true}>
+                        Mis Solicitudes
+                      </Navbar.Link>
+                      <Navbar.Link href="/logout">Salir</Navbar.Link>
+                    </>
+                  ) : (
+                    <Navbar.Link href="/login">Ingresar</Navbar.Link>
+                  )}
                 </Navbar.Collapse>
               </Navbar>
               <div className="bg-white px-2 py-2.5 dark:border-gray-700 dark:bg-gray-800 sm:px-4 rounded">
@@ -64,14 +77,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
               </div>
             </main>
           </div>
-      </div>
+        </div>
         <ScrollRestoration />
         <Scripts />
       </body>
     </html>
   );
 }
-
 export default function App() {
-  return <Outlet />;
+  return (
+    <Outlet />
+  );
 }
