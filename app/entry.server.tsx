@@ -26,13 +26,14 @@ authenticator.use(
     if (!email || !password) {
       throw new Error("Email and password are required");
     }
+
     try {
-    // the type of this user must match the type you pass to the Authenticator
-    // the strategy will automatically inherit the type if you instantiate
-    // directly inside the `use` method
-    const user: StoreType = await login(email, password);
-    console.log("User logged in", user);
-    return user;
+      // the type of this user must match the type you pass to the Authenticator
+      // the strategy will automatically inherit the type if you instantiate
+      // directly inside the `use` method
+      const user: StoreType = await login(email, password);
+
+      return user;
     } catch (error) {
       throw new Error("Login failed");
     }
