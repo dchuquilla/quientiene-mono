@@ -1,6 +1,6 @@
 import { GetDocumentById, SaveDocument } from "./fb-initializer";
 
-interface UserType {
+export interface UserType {
   email?: string;
   password?: string;
   created_at?: Date;
