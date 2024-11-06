@@ -32,6 +32,12 @@ interface LoaderData {
 
 export const loader = async ({
   request }: LoaderFunctionArgs): Promise<TypedResponse<LoaderData>> => {
+  // go to homepage if logged in
+  await authenticator.isAuthenticated(request, {
+    successRedirect: "/",
+  });
+
+
   const url = new URL(request.url);
   const invalidCredentials = url.searchParams.get("invalid_credentials");
 
