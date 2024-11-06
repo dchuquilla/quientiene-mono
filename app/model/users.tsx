@@ -6,6 +6,7 @@ export const GetUserByEmail = async (email: string) => {
   if (stores.length === 0) {
     return null;
   }
+
   return stores[0];
 };
 
@@ -14,11 +15,12 @@ export const login = async (email: string, password: string) => {
   if (!store) {
     throw new Error('Email not found');
   }
+
   if (!store.data?.password) {
     throw new Error('No password set for this store');
   }
+
   const passwordMatches = await bcrypt.compare(password, store.data.password);
-  console.log('passwordMatches', passwordMatches);
   if (!passwordMatches) {
     throw new Error('Invalid password');
   }
