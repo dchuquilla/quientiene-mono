@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, doc, getDoc, addDoc, getDocs, query, where, setDoc } from 'firebase/firestore/lite';
+import { doc, getDoc, getDocs, query, where, setDoc } from 'firebase/firestore/lite';
+import { getFirestore, collection, onSnapshot, addDoc } from 'firebase/firestore';
 import fbConfig from "../../fb-config";
 
 const firebaseConfig = {
@@ -73,3 +74,25 @@ export const GetDocumentsByField = async (collectionName: string, fieldName: str
     return [];
   }
 };
+
+export const OnSnapshotObserver = (collectionName: string) => {
+  const collectionRef = collection(fb_db, collectionName);
+  return onSnapshot(collectionRef, (snapshot) => {
+    console.log(`Received snapshot from ${collectionName}`);
+    snapshot.docChanges().forEach((change) => {
+      if (change.type === "added") {
+        console.log("New store: ", change.doc.data());
+      }
+      if (change.type === "modified") {
+        console.log("Modified store: ", change.doc.data());
+      }
+      if (change.type === "removed") {
+        console.log("Removed store: ", change.doc.data());
+      }
+    });
+  }, (error) => {
+    console.error(`Error in OnSnapshotObserver: ${error}`);
+  });
+};
+
+OnSnapshotObserver("stores");
