@@ -1,4 +1,4 @@
-import { GetDocumentById, SaveDocument } from "./fb-initializer";
+import { GetDocumentById, SaveDocument, OnSnapshotObserver } from "./fb-initializer";
 
 export interface UserType {
   email?: string;
@@ -43,4 +43,8 @@ export const createStore = async (store: StoreType) => {
     updated_at: store.updated_at,
   }
   return await SaveDocument("stores", store_data);
+};
+
+export const observeStores = () => {
+  OnSnapshotObserver("stores");
 };
