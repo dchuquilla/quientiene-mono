@@ -1,6 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { doc, getDoc, getDocs, query, where, setDoc } from 'firebase/firestore/lite';
-import { getFirestore, collection, onSnapshot, addDoc } from 'firebase/firestore';
+import { getFirestore, collection, onSnapshot, addDoc, doc, getDoc, getDocs, query, where, setDoc } from 'firebase/firestore';
 import fbConfig from "../../fb-config";
 
 const firebaseConfig = {
