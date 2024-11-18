@@ -23,8 +23,8 @@ export const loader = async ({
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "Solicitud de repuesto" },
-    { name: "description", content: "Detalles de solicitud de repuesto!" },
+    { title: "Cotizar repuesto" },
+    { name: "description", content: "Cotizar una solicitud de repuesto!" },
   ];
 };
 
