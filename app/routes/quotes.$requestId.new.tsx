@@ -4,6 +4,7 @@ import { Card, List, Button, FileInput, Label, Textarea, TextInput } from "flowb
 import { HiCheckCircle } from "react-icons/hi";
 import { GetReplacementRequestById } from "../model/replacement-request";
 import { type ReplacementProposalType, SaveReplacementProposal } from "../model/replacement-proposal";
+import { generateRandomString } from "../helpers/randomStringHelper";
 import invariant from "tiny-invariant";
 import fs from "fs/promises";
 import path from "path";
@@ -48,12 +49,6 @@ export const action: ActionFunction = async ({ request, params }) => {
     // Save photo to public/images folder
     const photoBuffer = Buffer.from(await photo.arrayBuffer());
 
-    // Generate a random 10-character string for photoName
-    const generateRandomString = (length: number) => {
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-      return Array.from({ length }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join('');
-    };
-
     const extension = path.extname(photo.name);
     const photoName = `${generateRandomString(10)}${extension}`;
 
@@ -70,6 +65,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     price: parseFloat(price),
     photo: photoUri,
     status: "pending",
+    approve_key: generateRandomString(6),
   };
 
   await SaveReplacementProposal(data);
@@ -121,7 +117,7 @@ export default function CreateQuote() {
                 <TextInput
                   id="price"
                   name="price"
-                  type="text"
+                  type="number"
                   pattern="^\d+(\,\d{1,2})?$"
                   title="Please enter a valid price (e.g., 1234,56)"
                   required

@@ -1,4 +1,4 @@
-import { GetDocumentById, SaveDocument, SaveRequestHistory } from "./fb-initializer";
+import { GetDocumentById, SaveDocument, SaveRequestHistory, UpdateDocument } from "./fb-initializer";
 import { UpdateReplacementRequestStatus } from "./replacement-request";
 
 export interface ReplacementProposalType {
@@ -10,6 +10,7 @@ export interface ReplacementProposalType {
   created_at?: Date;
   updated_at?: Date;
   completed_at?: Date;
+  approve_key?: string;
 }
 
 export const GetReplacementProposalById = async (id: string) => {
@@ -29,3 +30,11 @@ export const SaveReplacementProposal = async (data: ReplacementProposalType) => 
   }
   return await SaveRequestHistory(historyData);
 }
+
+export const UpdateReplacementProposalStatus = async (id: string, status: string) => {
+  const data: ReplacementProposalType = {
+    "status": status,
+    "updated_at": new Date()
+  }
+  return await UpdateDocument("replacement-proposals", id, data);
+};
