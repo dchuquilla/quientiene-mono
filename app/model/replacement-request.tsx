@@ -45,4 +45,4 @@ export const UpdateReplacementRequestStatus = async (id: string, status: string)
     "updated_at": new Date()
   }
   return await UpdateDocument("replacement-requests", id, data);
-}
+};
