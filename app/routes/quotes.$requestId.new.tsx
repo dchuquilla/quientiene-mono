@@ -9,6 +9,7 @@ import { authenticator } from "~/services/auth.server";
 import invariant from "tiny-invariant";
 import fs from "fs/promises";
 import path from "path";
+import { GetDocumentsByField } from "~/model/fb-initializer";
 
 export const loader = async ({
   params}: LoaderFunctionArgs) => {
@@ -34,6 +35,9 @@ export const action: ActionFunction = async ({ request, params }) => {
   invariant(params.requestId, "Missing requestId param");
 
   const user = await authenticator.isAuthenticated(request);
+  const creator = user?.email ? (await GetDocumentsByField("users", "email", user.email))[0] : null;
+  const store = creator?.id ? (await GetDocumentsByField("stores", "user_id", creator.id))[0] : null;
+
   const formData = await request.formData();
   const description = formData.get("description");
   const price = formData.get("price");
@@ -63,7 +67,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   const data: ReplacementProposalType = {
     request_id: params.requestId,
-    store_id: user?.email,
+    store_id: store?.id,
     description,
     price: parseFloat(price),
     photo: photoUri,
