@@ -6,6 +6,7 @@ export interface ReplacementProposalType {
   price?: number;
   photo?: string;
   request_id?: string;
+  store_id?: string;
   status?: string;
   created_at?: Date;
   updated_at?: Date;
