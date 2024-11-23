@@ -60,19 +60,24 @@ export const SaveRequestHistory = async (data: object) => {
   return await SaveDocument("request-history", data);
 }
 
-export const GetDocumentsByField = async (collectionName: string, fieldName: string, value: string) => {
+export const GetDocumentsByField = async (collectionName: string, fieldName: string, value: string | string[]) => {
   try {
     const collectionRef = collection(fb_db, collectionName);
-    const q = query(collectionRef, where(fieldName, "==", value));
+    let q;
+    if (Array.isArray(value)) {
+      q = query(collectionRef, where(fieldName, "in", value));
+    } else {
+      q = query(collectionRef, where(fieldName, "==", value));
+    }
     const querySnapshot = await getDocs(q);
     const documents = querySnapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }));
     console.log(`documents from ${collectionName}: ${JSON.stringify(documents)}`);
     return documents;
   } catch (error) {
     console.error(`Error in GetDocumentsByField: ${error}`);
-    return [];
+    return null;
   }
-};
+}
 
 export const OnSnapshotObserver = (collectionName: string) => {
   const collectionRef = collection(fb_db, collectionName);
@@ -80,13 +85,13 @@ export const OnSnapshotObserver = (collectionName: string) => {
     console.log(`Received snapshot from ${collectionName}`);
     snapshot.docChanges().forEach((change) => {
       if (change.type === "added") {
-        console.log("New store: ", change.doc.data());
+        console.log(`New ${collectionName}: `, { id: change.doc.id, data: change.doc.data() });
       }
       if (change.type === "modified") {
-        console.log("Modified store: ", change.doc.data());
+        console.log(`Modified ${collectionName}: `, { id: change.doc.id, data: change.doc.data() });
       }
       if (change.type === "removed") {
-        console.log("Removed store: ", change.doc.data());
+        console.log(`Removed ${collectionName}: `, { id: change.doc.id, data: change.doc.data() });
       }
     });
   }, (error) => {
