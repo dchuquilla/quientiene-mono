@@ -71,7 +71,7 @@ export const GetDocumentsByField = async (collectionName: string, fieldName: str
     }
     const querySnapshot = await getDocs(q);
     const documents = querySnapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }));
-    console.log(`documents from ${collectionName}: ${JSON.stringify(documents)}`);
+    console.log(`GetDocumentsByField ${collectionName}: ${JSON.stringify(documents)}`);
     return documents;
   } catch (error) {
     console.error(`Error in GetDocumentsByField: ${error}`);
