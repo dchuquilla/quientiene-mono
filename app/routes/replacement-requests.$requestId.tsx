@@ -46,25 +46,25 @@ export default function ReplacementRequests() {
       <div className="overflow-x-auto">
         <div className="flex flex-col md:flex-row">
           <div className="w-full md:w-1/3">
-            <Card href="#" className="max-w-sm">
+            <Card className="max-w-sm">
               <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                 {replacementRequest.data?.replacement.toUpperCase()}
               </h5>
 
               <Badge color={replacementStatusOptions[replacementRequest.data?.status]?.badge}>{ replacementStatusOptions[replacementRequest.data?.status]?.label }</Badge>
-              <p className="font-normal text-gray-700 dark:text-gray-400">
+              <div className="font-normal text-gray-700 dark:text-gray-400">
                 {replacementRequest.data?.transcription} <br /><br />
                 <List>
-              <List.Item icon={HiCheckCircle}><b>Marca:</b>&nbsp; {replacementRequest.data?.brand}</List.Item>
-              <List.Item icon={HiCheckCircle}><b>Modelo:</b>&nbsp; {replacementRequest.data?.model}</List.Item>
-              <List.Item icon={HiCheckCircle}><b>Año:</b>&nbsp; { replacementRequest.data?.year }</List.Item>
-              {replacementRequest.data?.audio ? (
-                <List.Item icon={HiCheckCircle}>
-                  <a href={replacementRequest.data?.audio} target="_blank" rel="noreferrer noopener">Audio</a>
-                </List.Item>
-              ): ("")}
+                  <List.Item icon={HiCheckCircle}><b>Marca:</b>&nbsp; {replacementRequest.data?.brand}</List.Item>
+                  <List.Item icon={HiCheckCircle}><b>Modelo:</b>&nbsp; {replacementRequest.data?.model}</List.Item>
+                  <List.Item icon={HiCheckCircle}><b>Año:</b>&nbsp; { replacementRequest.data?.year }</List.Item>
+                  {replacementRequest.data?.audio ? (
+                    <List.Item icon={HiCheckCircle}>
+                      <a href={replacementRequest.data?.audio} target="_blank" rel="noreferrer noopener">Audio 🎧</a>
+                    </List.Item>
+                  ): ("")}
                 </List>
-              </p>
+              </div>
               {user ? (
                 <Button as={Link} href={`/quotes/${replacementRequest.id}/new`} to={`/quotes/${replacementRequest.id}/new`}>
                   Cotizar
@@ -80,32 +80,32 @@ export default function ReplacementRequests() {
             </Card>
           </div>
           <div className="w-full md:w-2/3">
-        <h2 className="mb-1 text-base font-semibold text-gray-900 dark:text-white">Historial</h2>
-        <p className="flex items-center text-sm font-normal text-gray-500 dark:text-gray-400">
-          <Timeline>
-            <Timeline.Item>
-          <Timeline.Point icon={HiCalendar} />
-          <Timeline.Content>
-            <Timeline.Time>{new Date(replacementRequest.data?.created_at.seconds * 1000).toLocaleDateString("en-GB")}</Timeline.Time>
-            <Timeline.Title>{ replacementStatusOptions["new"]?.label }</Timeline.Title>
-          </Timeline.Content>
-            </Timeline.Item>
-            {replacementRequestHistory.map((history, index) => (
-          <Timeline.Item key={index}>
-            <Timeline.Point icon={HiCalendar} />
-            <Timeline.Content>
-              <Timeline.Time>{ new Date(history.data?.created_at.seconds * 1000).toLocaleDateString("en-GB") }</Timeline.Time>
-              <Timeline.Title>{replacementStatusOptions[history.data?.type]?.label}</Timeline.Title>
-              {user ? (
-            <Button color="success" as={Link} href={`/replacement-proposals/${history.data?.proposal_id}`} to={`/replacement-proposals/${history.data?.proposal_id}`}>
-              Ver detalles
-            </Button>
-              ) : null}
-            </Timeline.Content>
-          </Timeline.Item>
-            ))}
-          </Timeline>
-        </p>
+            <h2 className="mb-1 text-base font-semibold text-gray-900 dark:text-white">Historial</h2>
+            <div className="flex items-center text-sm font-normal text-gray-500 dark:text-gray-400">
+              <Timeline>
+                <Timeline.Item>
+              <Timeline.Point icon={HiCalendar} />
+              <Timeline.Content>
+                <Timeline.Time>{new Date(replacementRequest.data?.created_at.seconds * 1000).toLocaleDateString("en-GB")}</Timeline.Time>
+                <Timeline.Title>{ replacementStatusOptions["new"]?.label }</Timeline.Title>
+              </Timeline.Content>
+                </Timeline.Item>
+                {replacementRequestHistory?.map((history, index) => (
+                  <Timeline.Item key={index}>
+                    <Timeline.Point icon={HiCalendar} />
+                    <Timeline.Content>
+                      <Timeline.Time>{ new Date(history.data?.created_at.seconds * 1000).toLocaleDateString("en-GB") }</Timeline.Time>
+                      <Timeline.Title>{replacementStatusOptions[history.data?.type]?.label}</Timeline.Title>
+                      {user ? (
+                        <Button color="success" as={Link} href={`/replacement-proposals/${history.data?.proposal_id}`} to={`/replacement-proposals/${history.data?.proposal_id}`}>
+                          Ver detalles
+                        </Button>
+                      ) : null}
+                    </Timeline.Content>
+                  </Timeline.Item>
+                ))}
+              </Timeline>
+            </div>
           </div>
         </div>
       </div>
