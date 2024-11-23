@@ -32,7 +32,7 @@ export const replacementStatusOptions: { [key: string]: { badge: string, label: 
 };
 
 export const GetAllPendingRequests = async () => {
-  return await GetDocumentsByField("replacement-requests", "status", "new");
+  return await GetDocumentsByField("replacement-requests", "status", ["new", "in-progress"]);
 }
 
 export const GetReplacementRequestById = async (id: string) => {
