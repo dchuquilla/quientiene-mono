@@ -10,13 +10,11 @@ export async function action({ request }: ActionFunctionArgs) {
   // we call the method with the name of the strategy we want to use and the
   // request object, optionally we pass an object with the URLs we want the user
   // to be redirected to after a success or a failure
-  const loginResponse = await authenticator.authenticate("user-pass", request, {
+  return await authenticator.authenticate("user-pass", request, {
     successRedirect: "/",
     failureRedirect: "/login?invalid_credentials=true",
     throwOnError: false,
   });
-  console.log("loginResponse", loginResponse);
-  return loginResponse;
 }
 
 export const meta: MetaFunction = () => {
