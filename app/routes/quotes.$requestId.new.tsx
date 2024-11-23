@@ -5,12 +5,13 @@ import { HiCheckCircle } from "react-icons/hi";
 import { GetReplacementRequestById } from "../model/replacement-request";
 import { type ReplacementProposalType, SaveReplacementProposal } from "../model/replacement-proposal";
 import { generateRandomString } from "../helpers/randomStringHelper";
+import { authenticator } from "~/services/auth.server";
 import invariant from "tiny-invariant";
 import fs from "fs/promises";
 import path from "path";
 
 export const loader = async ({
-  params }: LoaderFunctionArgs) => {
+  params}: LoaderFunctionArgs) => {
   invariant(params.requestId, "Missing requestId param");
 
   const replacementRequest = await GetReplacementRequestById(params.requestId);
@@ -32,10 +33,11 @@ export const meta: MetaFunction = () => {
 export const action: ActionFunction = async ({ request, params }) => {
   invariant(params.requestId, "Missing requestId param");
 
+  const user = await authenticator.isAuthenticated(request);
   const formData = await request.formData();
   const description = formData.get("description");
   const price = formData.get("price");
-  const photo = formData.get("photo");
+  const photo = formData.get("photo") as File;
 
   if (
     typeof description !== "string" ||
@@ -47,7 +49,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   if (photo) {
     // Save photo to public/images folder
-    const photoBuffer = Buffer.from(await photo.arrayBuffer());
+    const photoBuffer = Buffer.from(await (photo as File).arrayBuffer());
 
     const extension = path.extname(photo.name);
     const photoName = `${generateRandomString(10)}${extension}`;
@@ -61,6 +63,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   const data: ReplacementProposalType = {
     request_id: params.requestId,
+    store_id: user?.email,
     description,
     price: parseFloat(price),
     photo: photoUri,
@@ -86,23 +89,23 @@ export default function CreateQuote() {
       <div className="overflow-x-auto">
         <div className="flex">
           <div className="w-1/3">
-            <Card href="#" className="max-w-sm">
+            <Card className="max-w-sm">
               <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-          {replacementRequest.data?.replacement.toUpperCase()}
+              {replacementRequest.data?.replacement.toUpperCase()}
               </h5>
-              <p className="font-normal text-gray-700 dark:text-gray-400">
-          {replacementRequest.data?.transcription} <br /><br />
-          <List>
-            <List.Item icon={HiCheckCircle}><b>Marca:</b>&nbsp; {replacementRequest.data?.brand}</List.Item>
-            <List.Item icon={HiCheckCircle}><b>Modelo:</b>&nbsp; {replacementRequest.data?.model}</List.Item>
-            <List.Item icon={HiCheckCircle}><b>Año:</b>&nbsp; { replacementRequest.data?.year }</List.Item>
-            {replacementRequest.data?.audio ? (
-              <List.Item icon={HiCheckCircle}>
-          <a href={replacementRequest.data?.audio} target="_blank" rel="noreferrer noopener">Audio</a>
-              </List.Item>
-            ): ("")}
-          </List>
-              </p>
+              <div className="font-normal text-gray-700 dark:text-gray-400">
+              {replacementRequest.data?.transcription} <br /><br />
+                <List>
+                  <List.Item icon={HiCheckCircle}><b>Marca:</b>&nbsp; {replacementRequest.data?.brand}</List.Item>
+                  <List.Item icon={HiCheckCircle}><b>Modelo:</b>&nbsp; {replacementRequest.data?.model}</List.Item>
+                  <List.Item icon={HiCheckCircle}><b>Año:</b>&nbsp; { replacementRequest.data?.year }</List.Item>
+                  {replacementRequest.data?.audio ? (
+                    <List.Item icon={HiCheckCircle}>
+                      <a href={replacementRequest.data?.audio} target="_blank" rel="noreferrer noopener">Audio</a>
+                    </List.Item>
+                  ): ("")}
+                </List>
+              </div>
             </Card>
           </div>
           <div className="w-2/3">
