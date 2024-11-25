@@ -22,7 +22,7 @@ export const GetDocumentById = async (collectionName: string, id: string) => {
     const documentRef = doc(collectionRef, id);
     const response = await getDoc(documentRef);
     const data = response.data();
-    console.log(`Data from ${collectionName}: ${JSON.stringify(data)}`);
+    console.log(`GetDocumentById ${collectionName}: ${JSON.stringify(data)}`);
     return { data, id };
   } catch (error) {
     console.log(`Error in GetDocumentById: ${error}`);
