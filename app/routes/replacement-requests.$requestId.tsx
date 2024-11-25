@@ -6,6 +6,7 @@ import { GetReplacementRequestById, replacementStatusOptions } from "../model/re
 import { GetReplacementRequestHistoryByRequestId } from "../model/replacement-request-history";
 import invariant from "tiny-invariant";
 import { authenticator } from "~/services/auth.server";
+import { GetDocumentsByField } from "~/model/fb-initializer";
 
 
 export const loader = async ({
@@ -13,16 +14,19 @@ export const loader = async ({
   invariant(params.requestId, "Missing requestId param");
 
   const user = await authenticator.isAuthenticated(request);
+  console.log("user:", user);
+  const creator = user?.email ? (await GetDocumentsByField("users", "email", user.email)) : null;
+  const store = creator && creator[0]?.id ? (await GetDocumentsByField("stores", "user_id", creator[0].id)) : null
   const replacementRequest = await GetReplacementRequestById(params.requestId);
   const replacementRequestHistory = await GetReplacementRequestHistoryByRequestId(params.requestId)
 
-  console.log("replacementRequest 2:", replacementRequest);
+  console.log("replacementRequestHistory 1:", replacementRequestHistory);
 
   if (!replacementRequest?.data) {
     throw new Response("Not found", { status: 404 });
   }
 
-  return { replacementRequest, replacementRequestHistory, user };
+  return { replacementRequest, replacementRequestHistory, user, store };
 };
 
 
@@ -34,7 +38,7 @@ export const meta: MetaFunction = () => {
 };
 
 export default function ReplacementRequests() {
-  const { replacementRequest, replacementRequestHistory, user } = useLoaderData<typeof loader>();
+  const { replacementRequest, replacementRequestHistory, user, store } = useLoaderData<typeof loader>();
 
   return (
     <div>
@@ -94,9 +98,9 @@ export default function ReplacementRequests() {
                   <Timeline.Item key={index}>
                     <Timeline.Point icon={HiCalendar} />
                     <Timeline.Content>
-                      <Timeline.Time>{ new Date(history.data?.created_at.seconds * 1000).toLocaleDateString("en-GB") }</Timeline.Time>
-                      <Timeline.Title>{replacementStatusOptions[history.data?.type]?.label}</Timeline.Title>
-                      {user ? (
+                      <Timeline.Time>{ new Date(history?.data?.created_at?.seconds * 1000).toLocaleDateString("en-GB") }</Timeline.Time>
+                      <Timeline.Title>{replacementStatusOptions[history?.data?.type]?.label} | { history.store?.name }</Timeline.Title>
+                      {user && store && store[0]?.id === history?.store?.id ? (
                         <Button color="success" as={Link} href={`/replacement-proposals/${history.data?.proposal_id}`} to={`/replacement-proposals/${history.data?.proposal_id}`}>
                           Ver detalles
                         </Button>
