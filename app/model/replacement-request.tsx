@@ -8,6 +8,7 @@ export interface ReplacementRequestType {
   model?: string;
   year?: string;
   chat_id?: string;
+  details_key?: string;
   city?: string;
   country?: string;
   status?: string;
