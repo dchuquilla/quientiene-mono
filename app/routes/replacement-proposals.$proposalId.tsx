@@ -6,6 +6,7 @@ import { GetReplacementRequestById, UpdateReplacementRequestStatus } from "../mo
 import { GetReplacementProposalById, UpdateReplacementProposalStatus } from "../model/replacement-proposal";
 import invariant from "tiny-invariant";
 import queryString from "query-string";
+import { useState } from 'react';
 
 export const loader = async ({
   request,
@@ -34,18 +35,26 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export const approveProposal = async (proposalId: string, replacementId: string) => {
-  console.log("Approving proposal", proposalId);
-  console.log("Updating request status", replacementId);
-  await UpdateReplacementRequestStatus(replacementId, "completed");
-  await UpdateReplacementProposalStatus(proposalId, "approved");
-  return null;
-}
-
 export default function ReplacementProposal() {
   const { replacementProposal, replacementRequest, approveKey } = useLoaderData<typeof loader>();
-  const canApprove = replacementRequest?.data?.status !== "completed" && approveKey && replacementProposal.data?.approve_key === approveKey;
-  console.log("replacementRequest", replacementRequest?.data?.status);
+  const [canApprove, setCanApprove] = useState(
+    replacementRequest?.data?.status !== "completed" &&
+    approveKey &&
+    replacementProposal.data?.approve_key === approveKey
+  );
+
+  const approveProposal = async (proposalId: string, replacementId: string) => {
+    console.log("Approving proposal", proposalId);
+    console.log("Updating request status", replacementId);
+    await UpdateReplacementRequestStatus(replacementId, "completed");
+    await UpdateReplacementProposalStatus(proposalId, "approved");
+    // Update local status
+    if (replacementRequest && replacementRequest.data) {
+      replacementRequest.data.status = "completed";
+    }
+    // Update canApprove based on new status
+    setCanApprove(false);
+  };
 
   return (
     <div>
@@ -79,7 +88,7 @@ export default function ReplacementProposal() {
                 <button
                   type="button"
                   className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                  onClick={async () => await approveProposal(replacementProposal.id, replacementRequest?.id)}
+                  onClick={async () => await approveProposal(replacementProposal.id, replacementRequest.id)}
                 >
                   Aprobar
                 </button>
