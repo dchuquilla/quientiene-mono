@@ -7,6 +7,7 @@ import { GetReplacementProposalById, UpdateReplacementProposalStatus } from "../
 import invariant from "tiny-invariant";
 import queryString from "query-string";
 import { useState } from 'react';
+import { SaveRequestHistory } from "~/model/fb-initializer";
 
 export const loader = async ({
   request,
@@ -48,6 +49,12 @@ export default function ReplacementProposal() {
     console.log("Updating request status", replacementId);
     await UpdateReplacementRequestStatus(replacementId, "completed");
     await UpdateReplacementProposalStatus(proposalId, "approved");
+    const historyData = {
+      "type": "accepted-proposal",
+      "proposal_id": proposalId,
+      "request_id": replacementId
+    }
+    await SaveRequestHistory(historyData);
     // Update local status
     if (replacementRequest && replacementRequest.data) {
       replacementRequest.data.status = "completed";
