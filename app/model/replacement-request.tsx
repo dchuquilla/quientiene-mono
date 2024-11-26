@@ -1,4 +1,5 @@
-import { GetDocumentById, GetDocumentsByField, UpdateDocument } from "./fb-initializer";
+import { fb_db, GetDocumentById, GetDocumentsByField, UpdateDocument } from "./fb-initializer";
+import { collection,getDocs, query, where, or, and } from 'firebase/firestore';
 
 export interface ReplacementRequestType {
   id?: string;
@@ -34,6 +35,22 @@ export const replacementStatusOptions: { [key: string]: { badge: string, label: 
 
 export const GetAllPendingRequests = async () => {
   return await GetDocumentsByField("replacement-requests", "status", ["new", "in-progress"]);
+}
+
+export const SearchPendingRequests = async (search: string) => {
+  const requestsRef = collection(fb_db, "replacement-requests");
+  const q = query(requestsRef, and(
+    where('status', 'in', ["new", "in-progress"]),
+    or(where('replacement', '==', search),
+      where('model', '==', search),
+      where('brand', '==', search)
+    )
+  ));
+
+  const querySnapshot = await getDocs(q);
+  const documents = querySnapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }));
+  console.log(`SearchPendingRequests replacement-requests: ${documents}`);
+  return documents;
 }
 
 export const GetReplacementRequestById = async (id: string) => {
