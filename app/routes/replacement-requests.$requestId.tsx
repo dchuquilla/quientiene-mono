@@ -7,6 +7,7 @@ import { GetReplacementRequestHistoryByRequestId } from "../model/replacement-re
 import invariant from "tiny-invariant";
 import { authenticator } from "~/services/auth.server";
 import { GetDocumentsByField } from "~/model/fb-initializer";
+import queryString from "query-string";
 
 
 export const loader = async ({
@@ -14,8 +15,10 @@ export const loader = async ({
   invariant(params.requestId, "Missing requestId param");
 
   const user = await authenticator.isAuthenticated(request);
-  const requestKey = params.requestKey;
-  console.log("user:", user);
+  const url = new URL(request.url);
+  const queryParams = queryString.parse(url.search);
+  const detailsKey = queryParams.detailsKey;
+
   const creator = user?.email ? (await GetDocumentsByField("users", "email", user.email)) : null;
   const store = creator && creator[0]?.id ? (await GetDocumentsByField("stores", "user_id", creator[0].id)) : null
   const replacementRequest = await GetReplacementRequestById(params.requestId);
@@ -27,7 +30,7 @@ export const loader = async ({
     throw new Response("Not found", { status: 404 });
   }
 
-  return { replacementRequest, replacementRequestHistory, user, store, requestKey };
+  return { replacementRequest, replacementRequestHistory, user, store, detailsKey };
 };
 
 
@@ -40,6 +43,8 @@ export const meta: MetaFunction = () => {
 
 export default function ReplacementRequests() {
   const { replacementRequest, replacementRequestHistory, user, store, detailsKey } = useLoaderData<typeof loader>();
+  console.log("detailsKey 1:", detailsKey);
+  console.log("detailsKey 2:", replacementRequest.data?.details_key);
 
   return (
     <div>
@@ -101,7 +106,7 @@ export default function ReplacementRequests() {
                     <Timeline.Content>
                       <Timeline.Time>{ new Date(history?.data?.created_at?.seconds * 1000).toLocaleDateString("en-GB") }</Timeline.Time>
                       <Timeline.Title>{replacementStatusOptions[history?.data?.type]?.label} | { history.store?.name }</Timeline.Title>
-                      {detailsKey === replacementRequest.data?.details_key && user && store && store[0]?.id === history?.store?.id ? (
+                      {detailsKey === replacementRequest.data?.details_key || (user && store && store[0]?.id === history?.store?.id) ? (
                         <Button color="success" as={Link} href={`/replacement-proposals/${history.data?.proposal_id}`} to={`/replacement-proposals/${history.data?.proposal_id}`}>
                           Ver detalles
                         </Button>
